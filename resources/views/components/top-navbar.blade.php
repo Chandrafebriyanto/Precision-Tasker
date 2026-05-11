@@ -70,5 +70,10 @@
                 </form>
             </div>
         </div>
+        
+        <button onclick="enableNotifications()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">
+            <span class="material-symbols-outlined text-xl">notifications_active</span>
+            <span class="hidden md:inline text-sm font-medium">Aktifkan Notifikasi</span>
+        </button>
     </div>
 </header>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 // Locale Switcher Route
 Route::get('/lang/{locale}', function ($locale) {
@@ -46,4 +47,21 @@ Route::middleware('auth')->group(function () {
     // Archive
     Route::get('/archive', [\App\Http\Controllers\ArchiveController::class, 'index'])->name('archive.index');
     Route::post('/archive/{task}/restore', [\App\Http\Controllers\ArchiveController::class, 'restore'])->name('archive.restore');
+
+    // Test Notification Route
+    Route::get('/test-notif', function () {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+    
+        // Kirim notifikasi ke user yang sedang login
+        $user->notify(new \App\Notifications\TestNotif());
+    
+        return "Notifikasi sedang meluncur! Coba cek pojok layarmu 🔔";
 });
+});
+
+// Offline
+Route::view('/offline', 'offline')->name('offline');
+
+// Push Subscription
+Route::post('/push/subscribe', [\App\Http\Controllers\PushController::class, 'store'])->name('push.subscribe');

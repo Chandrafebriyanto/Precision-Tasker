@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', __('app.appName'))</title>
 
-    <link rel="icon" href="{{ asset('logo-app.png') }}" type="image/png">
+    {{-- Push Notification --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Icon Website --}}
+    <link rel="icon" href="{{ asset('/icons/logo-app.png') }}" type="image/png">
+
+    {{-- Manifest Link --}}
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#1f2937"/>
+    <link rel="apple-touch-icon" href="{{ asset('icons/logo-192.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,5 +51,107 @@
             </div>
         </main>
     </div>
+
+    {{-- Service Worker --}}
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(registration => {
+                console.log('SW terdaftar dengan scope:', registration.scope);
+            }).catch(error => {
+                console.error('Pendaftaran SW gagal:', error);
+            });
+        });
+    }
+    </script>
+
+    {{-- Offline --}}
+    <script>
+    function updateOnlineStatus() {
+        // Ambil semua form dan tombol penting
+        const formsAndButtons = document.querySelectorAll('form, button[type="submit"], .action-btn');
+        
+        if (!navigator.onLine) {
+            formsAndButtons.forEach(el => {
+                el.style.opacity = '0.4';
+                el.style.pointerEvents = 'none'; // Bikin ga bisa diklik
+            });
+            console.log('Mode Offline Aktif: Fitur simpan/hapus dinonaktifkan.');
+        } else {
+            formsAndButtons.forEach(el => {
+                el.style.opacity = '1';
+                el.style.pointerEvents = 'auto'; // Kembalikan normal
+            });
+        }
+    }
+
+    // Jalankan saat web dimuat dan saat koneksi berubah
+    window.addEventListener('load', updateOnlineStatus);
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+</script>
+
+{{-- Push Notification --}}
+<script>
+    // Kunci Publik VAPID dari file .env
+    const VAPID_PUBLIC_KEY = '{{ env('VAPID_PUBLIC_KEY') }}';
+
+    // Fungsi mengubah Base64 ke format yang bisa dibaca browser
+    function urlB64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    // Fungsi utama untuk ditekan pengguna
+    async function enableNotifications() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert('Browser kamu tidak mendukung push notification.');
+            return;
+        }
+
+        try {
+            // Minta Izin
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                alert('Izin notifikasi ditolak.');
+                return;
+            }
+
+            // Dapatkan Service Worker yang aktif
+            const registration = await navigator.serviceWorker.ready;
+
+            // Mendaftar ke Push Manager
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+            });
+
+            // Kirim data Token ke Controller Laravel
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const response = await fetch('/push/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify(subscription)
+            });
+
+            if (response.ok) {
+                alert('Yeay! Notifikasi berhasil diaktifkan 🔔');
+            } else {
+                console.error('Gagal menyimpan ke server');
+            }
+        } catch (error) {
+            console.error('Gagal subscribe:', error);
+        }
+    }
+</script>
 </body>
 </html>
