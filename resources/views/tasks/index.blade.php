@@ -151,7 +151,7 @@
     @endif
 
     <!-- Slide-out Modal for Create/Edit -->
-    <div x-show="showModal" class="fixed inset-0 z-50 overflow-hidden" style="display: none;">
+    <div x-show="showModal" class="fixed top-20 bottom-0 left-0 right-0 z-40 overflow-hidden" style="display: none;">
         <!-- Backdrop -->
         <div x-show="showModal" x-transition.opacity class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="showModal = false"></div>
 

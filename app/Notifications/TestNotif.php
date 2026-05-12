@@ -3,17 +3,19 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue; // 1. Tambahkan baris ini
 use Illuminate\Notifications\Notification;
 use NotificationChannels\WebPush\WebPushMessage;
 use NotificationChannels\WebPush\WebPushChannel;
 
-class TestNotif extends Notification
+// 2. Tambahkan "implements ShouldQueue" di sebelah tulisan Notification
+class TestNotif extends Notification implements ShouldQueue 
 {
     use Queueable;
 
     public function via($notifiable)
     {
-        return [WebPushChannel::class]; // Gunakan saluran WebPush
+        return [WebPushChannel::class];
     }
 
     public function toWebPush($notifiable, $notification)

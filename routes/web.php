@@ -53,10 +53,9 @@ Route::middleware('auth')->group(function () {
         /** @var \App\Models\User $user */
         $user = Auth::user();
     
-        // Kirim notifikasi ke user yang sedang login
         $user->notify(new \App\Notifications\TestNotif());
     
-        return "Notifikasi sedang meluncur! Coba cek pojok layarmu 🔔";
+        return redirect()->back();
 });
 });
 

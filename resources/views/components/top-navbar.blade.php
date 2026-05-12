@@ -56,11 +56,16 @@
                 class="absolute right-0 mt-2 w-48 bg-surface-container-high border border-outline-variant/30 rounded-xl shadow-xl overflow-hidden z-50 p-1"
                 style="display: none;"
             >
-                <div class="px-3 py-2 border-b border-outline-variant/20 mb-1">
+                <div class="px-3 py-2 ">
                     <p class="text-sm font-bold text-on-surface truncate">{{ Auth::user()->full_name ?? Auth::user()->username }}</p>
                     <p class="text-xs text-on-surface-variant truncate">{{ Auth::user()->email }}</p>
                 </div>
                 
+                <button onclick="enableNotifications()" class="flex items-center gap-2 px-4 py-2 border-b border-outline-variant/20 mb-1 text-on-surface-variant hover:text-primary rounded-lg transition">
+                    <span class="material-symbols-outlined text-xl">notifications_active</span>
+                    <span class="hidden md:inline text-sm font-medium">Aktifkan Notifikasi</span>
+                </button>
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full px-3 py-2 flex items-center gap-2 hover:bg-error/10 text-error rounded-lg transition-colors text-sm font-medium">
@@ -71,9 +76,6 @@
             </div>
         </div>
         
-        <button onclick="enableNotifications()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">
-            <span class="material-symbols-outlined text-xl">notifications_active</span>
-            <span class="hidden md:inline text-sm font-medium">Aktifkan Notifikasi</span>
-        </button>
+        
     </div>
 </header>

@@ -32,13 +32,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    // Hanya proses GET request dan URL valid
     if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
 
     event.respondWith(
         fetch(event.request)
             .then((response) => {
-                // Simpan salinan ke cache kalau berhasil ambil dari internet
                 const responseClone = response.clone();
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, responseClone);
@@ -46,18 +44,13 @@ self.addEventListener('fetch', (event) => {
                 return response;
             })
             .catch(() => {
-                // JIKA OFFLINE, cari di cache
                 return caches.match(event.request).then((cachedResponse) => {
-                    // 1. Kalau file (CSS/JS/Image) ada di cache, tampilkan!
                     if (cachedResponse) return cachedResponse;
                     
-                    // 2. Kalau halaman utama tidak ada di cache, lempar ke dashboard
                     if (event.request.mode === 'navigate') {
                         return caches.match('/');
                     }
 
-                    // 3. INI KUNCI FIX ERRORNYA: 
-                    // Kalau file lain ga ketemu (seperti font), kembalikan response kosong agar tidak crash
                     return new Response('', { status: 503, statusText: 'Offline' });
                 });
             })
@@ -65,11 +58,16 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-    if (!(self.Notification && self.Notification.permission === 'granted')) {
-        return;
+    let data = {};
+    
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data = { title: event.data.text() };
+        }
     }
 
-    const data = event.data ? event.data.json() : {};
     const title = data.title || 'Notifikasi Tasker';
     const options = {
         body: data.body || 'Kamu punya pembaruan tugas baru.',
