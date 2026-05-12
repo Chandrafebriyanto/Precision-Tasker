@@ -67,29 +67,27 @@
 
     {{-- Offline --}}
     <script>
-    function updateOnlineStatus() {
-        // Ambil semua form dan tombol penting
-        const formsAndButtons = document.querySelectorAll('form, button[type="submit"], .action-btn');
+        function updateOnlineStatus() {
+            const formsAndButtons = document.querySelectorAll('form, button[type="submit"], .action-btn');
         
-        if (!navigator.onLine) {
-            formsAndButtons.forEach(el => {
-                el.style.opacity = '0.4';
-                el.style.pointerEvents = 'none'; // Bikin ga bisa diklik
-            });
-            console.log('Mode Offline Aktif: Fitur simpan/hapus dinonaktifkan.');
-        } else {
-            formsAndButtons.forEach(el => {
-                el.style.opacity = '1';
-                el.style.pointerEvents = 'auto'; // Kembalikan normal
-            });
+            if (!navigator.onLine) {
+                formsAndButtons.forEach(el => {
+                    el.style.opacity = '0.4';
+                    el.style.pointerEvents = 'none'; 
+                });
+                console.log('Mode Offline Aktif: Fitur simpan/hapus dinonaktifkan.');
+            } else {
+                formsAndButtons.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.pointerEvents = 'auto';
+                });
+            }
         }
-    }
 
-    // Jalankan saat web dimuat dan saat koneksi berubah
-    window.addEventListener('load', updateOnlineStatus);
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-</script>
+    w   indow.addEventListener('load', updateOnlineStatus);
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+    </script>
 
 {{-- Push Notification --}}
 <script>
