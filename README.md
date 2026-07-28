@@ -1,58 +1,169 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📌 Precision Tasker
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Precision Tasker** adalah aplikasi web manajemen tugas (task management) yang dibangun khusus untuk membantu mahasiswa/pelajar mengelola tugas kuliah dan deadline dengan lebih rapi. Aplikasi ini dibangun menggunakan **Laravel 13**, **Alpine.js**, dan **Tailwind CSS**, serta mendukung **Progressive Web App (PWA)** dengan notifikasi push, sehingga bisa digunakan secara offline dan menerima pengingat langsung di perangkat.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **🔐 Autentikasi** — Login & registrasi dengan username atau email.
+- **📊 Dashboard** — Ringkasan progres tugas (total, selesai, pending), tugas dengan deadline terdekat, tugas prioritas tinggi, serta grafik produktivitas mingguan (Chart.js).
+- **✅ Manajemen Tugas (Tasks)**
+  - Tambah, ubah, hapus, dan tandai tugas sebagai selesai.
+  - Atur prioritas tugas: `Low`, `Medium`, `High`.
+  - Atur deadline dan deskripsi tugas.
+  - Filter tugas berdasarkan mata kuliah (course).
+  - Urutkan tugas berdasarkan deadline atau prioritas.
+- **📚 Manajemen Mata Kuliah (Courses)** — Kelompokkan tugas berdasarkan mata kuliah, lengkap dengan kode dan ikon.
+- **🗄️ Arsip Tugas** — Tugas yang sudah selesai otomatis masuk ke arsip, dikelompokkan menjadi *baru selesai* (≤7 hari), *bulan lalu* (≤30 hari), dan *lebih lama*. Tugas juga dapat dipulihkan (restore) ke status pending, dan tersedia statistik penyelesaian tugas per mata kuliah.
+- **🔔 Push Notification** — Dukungan notifikasi push berbasis Web Push (VAPID) untuk mengingatkan tugas.
+- **🌐 Multi-bahasa** — Tersedia dalam Bahasa Inggris (`en`) dan Bahasa Indonesia (`id`).
+- **📱 PWA & Offline Support** — Dapat di-*install* ke perangkat (mobile/desktop) dan memiliki halaman fallback saat offline (service worker).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Layer | Teknologi |
+|---|---|
+| Backend | [Laravel 13](https://laravel.com) (PHP 8.3+) |
+| Frontend | Blade Templates, [Alpine.js](https://alpinejs.dev), [Tailwind CSS](https://tailwindcss.com) |
+| Build Tool | [Vite](https://vitejs.dev) |
+| Grafik | [Chart.js](https://www.chartjs.org) |
+| Notifikasi | [laravel-notification-channels/webpush](https://github.com/laravel-notification-channels/webpush) |
+| Database | SQLite (default), dapat dikonfigurasi ke MySQL/PostgreSQL |
+| PWA | Web App Manifest + Service Worker |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 📂 Struktur Proyek (Ringkas)
 
-## Agentic Development
+```
+app/
+├── Http/Controllers/
+│   ├── AuthController.php       # Login, registrasi, logout
+│   ├── DashboardController.php  # Ringkasan & statistik
+│   ├── TaskController.php       # CRUD tugas
+│   ├── CourseController.php     # CRUD mata kuliah
+│   ├── ArchiveController.php    # Arsip tugas selesai
+│   └── PushController.php       # Langganan push notification
+├── Models/
+│   ├── User.php
+│   ├── Task.php
+│   └── Course.php
+└── Notifications/
+    └── TestNotif.php
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+database/migrations/     # Skema tabel users, courses, tasks, push_subscriptions
+resources/views/         # Tampilan Blade (dashboard, tasks, courses, archive, auth)
+routes/web.php           # Definisi routing
+lang/en, lang/id          # Berkas terjemahan
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🗃️ Skema Data Inti
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **User** — memiliki banyak `Course` dan `Task`.
+- **Course** — `name`, `code`, `icon_string`, milik satu `User`, memiliki banyak `Task`.
+- **Task** — `title`, `description`, `priority` (Low/Medium/High), `deadline`, `status_task` (Pending/Completed), `completed_at`, terhubung ke `User` dan (opsional) `Course`.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 Instalasi & Menjalankan Proyek
 
-## Security Vulnerabilities
+### Prasyarat
+- PHP 8.3 atau lebih baru
+- Composer
+- Node.js & NPM
+- Ekstensi PHP standar Laravel (mbstring, pdo_sqlite, dll.)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Langkah-langkah
 
-## License
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/Chandrafebriyanto/Precision-Tasker.git
+   cd Precision-Tasker
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. **Install dependencies PHP & JavaScript**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Konfigurasi environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   Secara default, aplikasi menggunakan database **SQLite**. Pastikan file database tersedia:
+   ```bash
+   touch database/database.sqlite
+   ```
+   Jika ingin menggunakan MySQL/PostgreSQL, sesuaikan variabel `DB_*` pada file `.env`.
+
+4. **(Opsional) Konfigurasi Web Push Notification**
+   Untuk mengaktifkan fitur notifikasi push, generate VAPID keys dan tambahkan ke `.env`:
+   ```
+   VAPID_SUBJECT=mailto:youremail@example.com
+   VAPID_PUBLIC_KEY=
+   VAPID_PRIVATE_KEY=
+   ```
+
+5. **Jalankan migrasi database**
+   ```bash
+   php artisan migrate
+   ```
+
+6. **Build asset front-end**
+   ```bash
+   npm run build
+   # atau untuk mode pengembangan:
+   npm run dev
+   ```
+
+7. **Jalankan server lokal**
+
+   Gunakan script `dev` bawaan (menjalankan server, queue listener, log viewer, dan Vite secara bersamaan):
+   ```bash
+   composer dev
+   ```
+   Atau jalankan secara manual:
+   ```bash
+   php artisan serve
+   ```
+
+8. **Akses aplikasi**
+   Buka browser dan kunjungi `http://localhost:8000` (atau sesuai `APP_URL`).
+
+---
+
+## 🧪 Menjalankan Test
+
+```bash
+composer test
+```
+
+---
+
+## 🌍 Mengganti Bahasa
+
+Aplikasi mendukung dua bahasa. Ganti bahasa melalui route berikut:
+
+```
+/lang/en   → Bahasa Inggris
+/lang/id   → Bahasa Indonesia
+```
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dibangun di atas framework [Laravel](https://laravel.com), yang dirilis di bawah lisensi [MIT](https://opensource.org/licenses/MIT).
+
+---
+
+## 🙌 Kontribusi
+
+Kontribusi dalam bentuk *pull request* atau *issue* sangat terbuka. Silakan fork repository ini dan ajukan perubahan yang diinginkan.
